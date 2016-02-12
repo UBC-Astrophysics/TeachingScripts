@@ -1,8 +1,24 @@
 # TeachingScripts
 
+## makelibrary.sh
+
+Make a library.xml file from an existing set of directories with html, problem and video files.
+
+## txt2library.sh
+
+Create an EdX library of problems from a txt file with problems.
+
+## txt2xml.awk
+
+Generate a series of XML problems from an txt file with problems.
+
+## combinecsv.py
+
 Combine the output from AMC with a gradebook from Connect.
 
 python3 combinecsv.py tutorials_b.csv ASTR311_2015W_tut2.csv a.csv 9 6
+
+## upload_csv.py
 
 Upload a gradebook in a CSV file to a particular LTI endpoint on EdX:
 
