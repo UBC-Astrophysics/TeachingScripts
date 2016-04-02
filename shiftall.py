@@ -16,12 +16,16 @@ def replacedate(m):
     return (dateutil.parser.parse(m.group(0))+td).strftime('%d %B %Y').lstrip("0").replace(" 0", " ")
 
 def processfile(fname):
+    outstring=""
     with open(fname) as f:
         for line in f:
             newline=progtimestamp.sub(replacetimestamp,line)
             newline=progdate.sub(replacedate,newline)
-            print(newline.strip())
-    
+            outstring=outstring+newline
+    with open(fname,"w") as f:
+        f.write(outstring)
+
+        
 if (len(sys.argv)<3):
     print("Format:\n\n  python shiftall.py directory_to_process number_of_days")
 else:
@@ -35,7 +39,7 @@ else:
 
     for root, subFolders, files in os.walk(sys.argv[1]):
         for fname in files:
-            if fname.endsWith(".xml"):
-                print(f)
+            if fname.endswith(".xml") or fname.endswith(".html"):
+                processfile(os.path.join(root, fname))
                 
 
