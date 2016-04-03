@@ -35,7 +35,7 @@ else:
 
     # only recognize dates from 2000 to 2099
     # just in case you have earlier dates that aren't due dates (i.e. don't shift them)
-    progdate=re.compile('[0-9]+ (?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?) (2\d{3})(?=\D|$)')
+    progdate=re.compile('[0-9]+\w+(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?)\w+(2\d{3})(?=\D|$)')
 
     for root, subFolders, files in os.walk(sys.argv[1]):
         for fname in files:
