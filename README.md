@@ -1,5 +1,23 @@
 # TeachingScripts
 
+## shiftall.py
+
+Shift all of the dates in a course archive forward a given number of days
+
+usage:   python shiftall.py directory_to_process number_of_days
+
+## add_edx_to_ubc_csv.py
+
+Add the edx grades to the UBC classlist downloaded from the FSC
+
+python add_edx_to_ubc_csv.py match_csv anonid_csv gradebook_csv class_list_csv output_csv
+
+## create_final_upload.py
+
+Using the output from Auto Multiple Choice (AMC) and the matching file between UBC IDs and Anon IDS from survey.ubc.ca create a file to upload to EdX using upload_csv.py
+
+python create_final_upload.py AMC_grade_csv match_csv
+
 ## makelibrary.sh
 
 Make a library.xml file from an existing set of directories with html, problem and video files.
