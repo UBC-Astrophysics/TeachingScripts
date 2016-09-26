@@ -35,20 +35,28 @@ def _doupload(arguments):
             mapping = _get_uid_to_anon_map(arguments['mapping_csv'])
             test_anon_id = next(mapping.itervalues())
 
-        print("Fetching LTI units for course_id: {course_id}".format(
-            course_id=arguments['course_id'],
-        ))
+
+        if arguments['endpoint_url']==None:
+            if arguments['block']==None:
+                print("Fetching LTI units for course_id: {course_id}".format(
+                    course_id=arguments['course_id'],
+                ))
+                endpoint = _prompt_select_lti_endpoint(
+                    arguments['platform_url'],
+                    arguments['course_id'],
+                    choice_num=arguments['endpoint'],
+                )
+                endpoint_url = re.sub(
+                    r'\{anon_user_id\}',
+                    '',
+                    endpoint['lti_2_0_result_service_json_endpoint']
+                )
+            else:
+                endpoint_url = ('%s/courses/%s/xblock/%s/handler_noauth/lti_2_0_result_rest_handler/user/' %
+                (arguments['platform_url'],arguments['course_id'],arguments['block']))
+        else:
+            endpoint_url = arguments['endpoint_url']
             
-        endpoint = _prompt_select_lti_endpoint(
-            arguments['platform_url'],
-            arguments['course_id'],
-            choice_num=arguments['endpoint'],
-        )
-        endpoint_url = re.sub(
-            r'\{anon_user_id\}',
-            '',
-            endpoint['lti_2_0_result_service_json_endpoint']
-        )
         if mapping!=None:
             test_url = endpoint_url + test_anon_id
             _validate_lti_passport(
@@ -126,6 +134,22 @@ def _parse_command_line_arguments():
             'The path of the CSV file containing the mapping from '
             'user_id to anon_id. This file is downloadable from the '
             'instructor tab of the course.'
+        ),
+    )
+    parser.add_argument(
+        '--endpoint-url',
+        type=str,
+        required=False,
+        help=(
+            'The url of the LTI endpoint'
+        ),
+    )
+    parser.add_argument(
+        '--block',
+        type=str,
+        required=False,
+        help=(
+            'The location of the LTI endpoint from Staff Debug Info'
         ),
     )
     parser.add_argument(

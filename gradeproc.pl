@@ -12,14 +12,14 @@
 # 55-59	 C-
 # 50-54	 D
 # 0-49	 F (Fail)
-$connect_mode=1;
-$scaling=3;
+$connect_mode=0;
+$scaling=4;
 $provgradecol=20;
-$finalgradecol=19;
-$finalexamcol=21;
+$finalgradecol=28;
+$finalexamcol=29;
 $useridcol=2;
 $tutorialcol=4;
-$year='2014W';
+$year='2015W';
 $session='UBC';
 $dept='ASTR';
 $course='311';
@@ -33,9 +33,9 @@ $title[4]=' 0 -  49 F';
 $firstline=1;
 while (<>) {
     @a=split(',');
-    unless ( $#a==108 ) {
-	print "$a[0],$#a\n";
-    }
+#    unless ( $#a==108 ) {
+#	print "$a[0],$#a\n";
+#    }
     if ($firstline) {
 	$firstline=0;
 	if ($connect_mode) {
@@ -47,7 +47,7 @@ while (<>) {
     $a[$finalexamcol]=~s/"//g;
     unless ( /^\#/ || $a[$finalexamcol]=='' ) {
 	$a[$finalgradecol] =~ s/"([0-9\.]*)%"/\1/;
-	$grade=int($a[$finalgradecol]+0.5)+$scaling;
+	$grade=int($a[$finalgradecol]*100+0.5)+$scaling;
 	if ($grade>=43 && $grade<50) {
 	    $grade=50;
 	}
