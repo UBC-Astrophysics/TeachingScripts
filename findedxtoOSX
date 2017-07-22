@@ -1,0 +1,48 @@
+#!/bin/bash
+#
+# find all XML files with OpenStax links and add in the HTML from OpenStax
+#
+# works for EdX vertical components
+# works for most OpenStax but not "Thinking Ahead" which requires some manual editing
+# copies image content to static directory
+#
+if [ $# -lt 3 ]; then
+    echo Format:
+    echo "  findedxtoOSX OSX_directory Static_directory XML_files"
+    exit 
+fi
+
+DIRNAME=$(dirname $0)
+
+openstaxdir=$1
+shift 
+staticdir=$1
+shift 
+for i in $@ ; do
+    # does the file contain a link to OpenStax Content
+    res=`egrep 'display_name="m\d{5}"' $i`
+    if [ $? -eq 0 ]; then
+	# extract the directory with the content
+	directory=`echo $res | sed -e 's/<vertical display_name="//' -e 's$"/>$$'`
+	# what is the same of the html file?
+	file=${openstaxdir}/${directory}/index.cnxml.html
+	# does the file exist?
+	if [ -e $file ]; then
+	    # copy the images to the static directory
+	    cp ${openstaxdir}/${directory}/OSC* $staticdir
+	    # extract the title 
+	    title=`grep -oE '<title>.+</title>' $file | sed -e 's$<title>$$' -e 's$</title>$$'`
+	    # output the title to the new vertical component
+	    echo "<vertical display_name=\"$title\">" > $i
+	    # process the openstax html
+	    # strip the opening and closing BODY tags
+	    python ${DIRNAME}/processOpenStax.py $file | egrep -v '^<body .+>.+</div>$' | sed 's$</body>$$' >> $i
+	    echo "</vertical>" >> $i
+	else
+	    echo Could not find the OSX file for $file for xml file $i
+	fi
+    fi
+
+done
+
+	 
