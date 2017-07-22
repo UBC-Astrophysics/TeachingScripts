@@ -1,5 +1,9 @@
 # TeachingScripts
 
+## findedxtoOSX
+
+Finds links in EdX to OpenStax content and merges the OpenStax content into EdX.  How to use:  Create a Subsection in Edx ("Vertical Component") with the name of the corresponding directory on OpenStax in the OpenStax repository.   Download the course from EdX.  Run the script on the unpacked TAR file.  Repack and upload.
+
 ## shiftall.py
 
 Shift all of the dates in a course archive forward a given number of days
