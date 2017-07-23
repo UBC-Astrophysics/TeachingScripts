@@ -30,14 +30,8 @@ for i in $@ ; do
 	if [ -e $file ]; then
 	    # copy the images to the static directory
 	    cp ${openstaxdir}/${directory}/OSC* $staticdir
-	    # extract the title 
-	    title=`grep -oE '<title>.+</title>' $file | sed -e 's$<title>$$' -e 's$</title>$$'`
-	    # output the title to the new vertical component
-	    echo "<vertical display_name=\"$title\">" > $i
 	    # process the openstax html
-	    # strip the opening and closing BODY tags
-	    python ${DIRNAME}/processOpenStax.py $file | egrep -v '^<body .+>.+</div>$' | sed 's$</body>$$' >> $i
-	    echo "</vertical>" >> $i
+	    python ${DIRNAME}/processOpenStax.py $file > $i
 	else
 	    echo Could not find the OSX file for $file for xml file $i
 	fi
