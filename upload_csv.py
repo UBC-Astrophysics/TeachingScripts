@@ -12,7 +12,6 @@ import re
 import urllib
 import multiprocessing
 
-import mock
 from oauthlib.oauth1 import Client  # pylint: disable=F0401
 import requests
 
@@ -35,28 +34,20 @@ def _doupload(arguments):
             mapping = _get_uid_to_anon_map(arguments['mapping_csv'])
             test_anon_id = next(mapping.itervalues())
 
-
-        if arguments['endpoint_url']==None:
-            if arguments['block']==None:
-                print("Fetching LTI units for course_id: {course_id}".format(
-                    course_id=arguments['course_id'],
-                ))
-                endpoint = _prompt_select_lti_endpoint(
-                    arguments['platform_url'],
-                    arguments['course_id'],
-                    choice_num=arguments['endpoint'],
-                )
-                endpoint_url = re.sub(
-                    r'\{anon_user_id\}',
-                    '',
-                    endpoint['lti_2_0_result_service_json_endpoint']
-                )
-            else:
-                endpoint_url = ('%s/courses/%s/xblock/%s/handler_noauth/lti_2_0_result_rest_handler/user/' %
-                (arguments['platform_url'],arguments['course_id'],arguments['block']))
-        else:
-            endpoint_url = arguments['endpoint_url']
+        print("Fetching LTI units for course_id: {course_id}".format(
+            course_id=arguments['course_id'],
+        ))
             
+        endpoint = _prompt_select_lti_endpoint(
+            arguments['platform_url'],
+            arguments['course_id'],
+            choice_num=arguments['endpoint'],
+        )
+        endpoint_url = re.sub(
+            r'\{anon_user_id\}',
+            '',
+            endpoint['lti_2_0_result_service_json_endpoint']
+        )
         if mapping!=None:
             test_url = endpoint_url + test_anon_id
             _validate_lti_passport(
@@ -64,7 +55,7 @@ def _doupload(arguments):
                 arguments['lti_secret'],
                 test_url
                 )
-        if False:
+        if True:
             for row in _generate_valid_grading_rows(arguments['grade_csv']):
                 _post_grade(
                     mapping,
@@ -134,22 +125,6 @@ def _parse_command_line_arguments():
             'The path of the CSV file containing the mapping from '
             'user_id to anon_id. This file is downloadable from the '
             'instructor tab of the course.'
-        ),
-    )
-    parser.add_argument(
-        '--endpoint-url',
-        type=str,
-        required=False,
-        help=(
-            'The url of the LTI endpoint'
-        ),
-    )
-    parser.add_argument(
-        '--block',
-        type=str,
-        required=False,
-        help=(
-            'The location of the LTI endpoint from Staff Debug Info'
         ),
     )
     parser.add_argument(
@@ -254,7 +229,7 @@ def _get_uid_to_anon_map(filename):
             elif row[0] == 'User ID':
                 continue
             else:
-                mapping[int(row[0])] = row[1]
+                mapping[row[0]] = row[1]
     if len(mapping) < 1:
         raise _LTIToolError('Mapping CSV file had no useful data!')
     return mapping
@@ -390,7 +365,22 @@ def _print_all_endpoints(endpoints):
             url=endpoint['lti_2_0_result_service_json_endpoint']
         ))
 
+class SignedRequest(object):
+        """
+            Encapsulates request attributes needed when working
+                with the `oauthlib.oauth1` API
+                    """
+        def __init__(self, **kwargs):
+            self.uri = kwargs.get('uri')
+            self.http_method = kwargs.get('http_method')
+            self.params = kwargs.get('params')
+            self.oauth_params = kwargs.get('oauth_params')
+            self.headers = kwargs.get('headers')
+            self.body = kwargs.get('body')
+            self.decoded_body = kwargs.get('decoded_body')
+            self.signature = kwargs.get('signature')
 
+            
 def _get_authorization_header(request, client_key, client_secret):
     """
     Get proper HTTP Authorization header for a given request
@@ -408,9 +398,9 @@ def _get_authorization_header(request, client_key, client_secret):
         sha1.digest()  # pylint: disable=too-many-function-args
     ))
     client = Client(client_key, client_secret)
-    params = client.get_oauth_params(None)
+    params = client.get_oauth_params(request)
     params.append((u'oauth_body_hash', oauth_body_hash))
-    mock_request = mock.Mock(
+    mock_request = SignedRequest(
         uri=unicode(urllib.unquote(request.url)),
         headers=request.headers,
         body=u'',
