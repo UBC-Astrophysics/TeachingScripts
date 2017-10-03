@@ -29,7 +29,7 @@ for i in $@ ; do
 	# does the file exist?
 	if [ -e $file ]; then
 	    # copy the images to the static directory
-	    cp ${openstaxdir}/${directory}/OSC* $staticdir
+	    cp ${openstaxdir}/${directory}/* $staticdir
 	    # process the openstax html
 	    python ${DIRNAME}/processOpenStax.py $file > $i
 	else
