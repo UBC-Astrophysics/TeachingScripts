@@ -55,7 +55,7 @@ def _doupload(arguments):
                 arguments['lti_secret'],
                 test_url
                 )
-        if True:
+        if False:
             for row in _generate_valid_grading_rows(arguments['grade_csv']):
                 _post_grade(
                     mapping,
