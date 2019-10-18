@@ -38,13 +38,15 @@ else:
 
     timestamp=re.compile('[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]T[0-9][0-9]:[0-9][0-9]:[0-9][0-9]')
 
-    # only recognize dates from 2000 to 2099
+    # only recognize dates from 2000 to 2099 
     # just in case you have earlier dates that aren't due dates (i.e. don't shift them)
     progdate=re.compile('[0-9]+ +(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?|Jul(?:y)?|Aug(?:ust)?|Sep(?:tember)?|Oct(?:ober)?|Nov(?:ember)?|Dec(?:ember)?) +(2\d{3})(?=\D|$)')
+    # before July only
+#    progdate=re.compile('[0-9]+ +(?:Jan(?:uary)?|Feb(?:ruary)?|Mar(?:ch)?|Apr(?:il)?|May|Jun(?:e)?) +(2\d{3})(?=\D|$)')
 
     for root, subFolders, files in os.walk(sys.argv[1]):
         for fname in files:
-            if fname.endswith(".xml") or fname.endswith(".html"):
+            if fname.endswith(".xml") or fname.endswith(".html") or fname.endswith(".tex"):
                 processfile(os.path.join(root, fname))
                 
 
